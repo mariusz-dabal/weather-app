@@ -1,9 +1,18 @@
 // DOM
+const input = document.getElementById("search-bar");
+const main = document.querySelector("main");
+
 const humidity = document.getElementById("hum");
 const temperature = document.getElementById("temp");
 const clouds = document.getElementById("clouds");
 const searchBtn = document.getElementById("search-btn");
-const input = document.getElementById("search-bar");
+
+const pollutionInfo = document.querySelector(".pollution-info");
+const value = document.getElementById("value");
+const status = document.querySelector(".status");
+const level = document.getElementById("level");
+const desc = document.getElementById("desc");
+const advice = document.getElementById("advice");
 
 // Validate city name
 function validateCity(city) {
@@ -11,8 +20,8 @@ function validateCity(city) {
   return re.test(String(city));
 }
 
-// URL
-function getUrl() {
+// URL for weather API
+function getUrlWeather() {
   let api = "https://api.openweathermap.org/data/2.5/weather?q=";
   let city = "";
   let units = "&units=metric";
@@ -27,8 +36,38 @@ function getUrl() {
   return api + city + units + apiKey;
 }
 
-// AJAX
-function loadWeather(url) {
+// URL for pollution API
+function getUrlPollution(pol) {
+  let api = "https://airapi.airly.eu/v2/measurements/nearest?";
+  let indexType = "indexType=AIRLY_CAQI";
+  let distance = "&maxDistanceKM=5";
+
+  let { lat, lon } = pol.coord;
+
+  return `${api}${indexType}&lat=${lat}&lng=${lon}${distance}`;
+}
+
+// Display weather data
+function loadWeather(weather) {
+  humidity.innerHTML = `${weather.main.humidity}%`;
+  temperature.innerHTML = `${Math.ceil(weather.main.temp)}°C`;
+  clouds.innerHTML = `${weather.clouds.all}%`;
+}
+
+// Display pollution data
+function loadPollution(pollution) {
+  let width = pollution.current.indexes[0].value;
+  let color = pollution.current.indexes[0].color;
+  status.style.backgroundColor = color;
+  status.style.width = `${width}%`;
+  status.style.display = "block";
+  level.innerHTML = pollution.current.indexes[0].level;
+  status.textContent = pollution.current.indexes[0].description;
+  advice.innerHTML = pollution.current.indexes[0].advice;
+}
+
+// AJAX weather
+function loadWeatherData(url) {
   let xhr = new XMLHttpRequest();
 
   xhr.open("GET", url, true);
@@ -36,7 +75,11 @@ function loadWeather(url) {
   xhr.onload = function() {
     if (this.status == 200) {
       let JSONData = JSON.parse(this.responseText);
-      loadData(JSONData);
+      loadWeather(JSONData);
+
+      loadPollutionData(getUrlPollution(JSONData));
+
+      main.style.display = "block";
     } else if (this.status == 400 || 404) {
       console.log("Can not find the city");
     }
@@ -45,21 +88,40 @@ function loadWeather(url) {
   xhr.send();
 }
 
+// AJAX pollution
+function loadPollutionData(url) {
+  let xhr = new XMLHttpRequest();
+
+  xhr.open("GET", url, true);
+
+  xhr.onload = function() {
+    if (this.status == 200) {
+      let JSONData = JSON.parse(this.responseText);
+      loadPollution(JSONData);
+      console.log(JSONData);
+      pollutionInfo.style.visibility = "visible";
+    } else if (this.status >= 400) {
+      pollutionInfo.style.visibility = "hidden";
+      console.log("ERROR");
+    }
+  };
+
+  xhr.setRequestHeader("apikey", "wrx2BgtI1X3VvDyxV3IpjFuL7FW0jBUk");
+
+  xhr.send();
+}
+
+// Events
 input.addEventListener("keyup", event => {
   if (event.keyCode === 13) {
-    let url = getUrl();
-    loadWeather(url);
+    let url = getUrlWeather();
+    loadWeatherData(url, loadWeather);
+    input.value = "";
   }
 });
 
 searchBtn.addEventListener("click", () => {
-  let url = getUrl();
-  loadWeather(url);
+  let url = getUrlWeather();
+  loadWeatherData(url, loadWeather);
+  input.value = "";
 });
-
-// Display data
-function loadData(weather) {
-  humidity.innerHTML = `Wilgotność: ${weather.main.humidity}%`;
-  temperature.innerHTML = `Temperatura: ${weather.main.temp}°C`;
-  clouds.innerHTML = `Zachmurzenie: ${weather.clouds.all}%`;
-}

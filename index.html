@@ -5,33 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Jimmy's Weather App</title>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+      integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <header>
-      <h1>Weather App</h1>
-      <input
-        type="text"
-        name="search-bar"
-        id="search-bar"
-        placeholder="Type your city"
-      />
-      <button id="search-btn">search</button>
-    </header>
-    <main>
-      <div class="weather-info">
-        <div id="hum" class="weather-item"></div>
-        <div id="temp" class="weather-item"></div>
-        <div id="clouds" class="weather-item"></div>
-      </div>
-      <div class="pollution-info">
-        <div id="co" class="pollution-item"></div>
-        <div id="o3" class="pollution-item"></div>
-        <div id="so2" class="pollution-item"></div>
-        <div id="no2" class="pollution-item"></div>
-      </div>
-    </main>
-    <div id="test-data"></div>
+    <div class="wrapper">
+      <header>
+        <h1>Pogoda na dziś</h1>
+        <div class="search-bar">
+          <input
+            type="text"
+            name="search-bar"
+            id="search-bar"
+            placeholder="Wpisz Miasto"
+          />
+          <button id="search-btn">
+            <i class="fas fa-search-location"></i>
+          </button>
+        </div>
+      </header>
+      <main>
+        <div class="weather-info">
+          <div id="hum" class="weather-item">wilgotność</div>
+          <div id="temp" class="weather-item"></div>
+          <div id="clouds" class="weather-item"></div>
+        </div>
+        <div class="pollution-info">
+          <div id="value" class="pollution-item">
+            <div class="status"></div>
+          </div>
+          <div id="level"></div>
+          <div id="desc"></div>
+          <div id="advice"></div>
+        </div>
+      </main>
+    </div>
     <script src="js/app.js"></script>
   </body>
 </html>
