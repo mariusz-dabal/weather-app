@@ -1,16 +1,12 @@
 // DOM
 const input = document.getElementById("search-bar");
 const main = document.querySelector("main");
-
-const humidity = document.getElementById("hum");
-const temperature = document.getElementById("temp");
-const clouds = document.getElementById("clouds");
 const searchBtn = document.getElementById("search-btn");
+const error = document.querySelector(".error");
 
 const pollutionInfo = document.querySelector(".pollution-info");
 const value = document.getElementById("value");
 const status = document.querySelector(".status");
-const level = document.getElementById("level");
 const desc = document.getElementById("desc");
 const advice = document.getElementById("advice");
 
@@ -30,7 +26,7 @@ function getUrlWeather() {
   if (validateCity(input.value)) {
     city = input.value;
   } else {
-    console.log("Invalid City Name");
+    console.log("Niepoprawna nazwa miasta.");
   }
 
   return api + city + units + apiKey;
@@ -47,11 +43,34 @@ function getUrlPollution(pol) {
   return `${api}${indexType}&lat=${lat}&lng=${lon}${distance}`;
 }
 
+// animate counting
+function animateValue(id, start, end, duration, unit) {
+  var range = end - start;
+  var current = start;
+  var increment = end > start ? 1 : -1;
+  var stepTime = Math.abs(Math.floor(duration / range));
+  var obj = document.getElementById(id);
+  if (start === end) {
+    obj.innerHTML = end;
+    return null;
+  }
+  var timer = setInterval(function() {
+    current += increment;
+    obj.innerHTML = current + unit;
+    if (current == end) {
+      clearInterval(timer);
+    }
+  }, stepTime);
+}
+
 // Display weather data
 function loadWeather(weather) {
-  humidity.innerHTML = `${weather.main.humidity}%`;
-  temperature.innerHTML = `${Math.ceil(weather.main.temp)}°C`;
-  clouds.innerHTML = `${weather.clouds.all}%`;
+  const hum = weather.main.humidity;
+  const temp = Math.ceil(weather.main.temp);
+  const clouds = weather.clouds.all;
+  animateValue("hum", 0, hum, 800, "%");
+  animateValue("temp", 0, temp, 800, "°C");
+  animateValue("clouds", 0, clouds, 800, "%");
 }
 
 // Display pollution data
@@ -61,8 +80,8 @@ function loadPollution(pollution) {
   status.style.backgroundColor = color;
   status.style.width = `${width}%`;
   status.style.display = "block";
-  level.innerHTML = pollution.current.indexes[0].level;
-  status.textContent = pollution.current.indexes[0].description;
+  status.textContent = `${width}%`;
+  desc.textContent = pollution.current.indexes[0].description;
   advice.innerHTML = pollution.current.indexes[0].advice;
 }
 
@@ -79,9 +98,11 @@ function loadWeatherData(url) {
 
       loadPollutionData(getUrlPollution(JSONData));
 
+      error.textContent = "";
       main.style.display = "block";
     } else if (this.status == 400 || 404) {
-      console.log("Can not find the city");
+      main.style.display = "none";
+      error.textContent = "Nie ma takiego miasta";
     }
   };
 
