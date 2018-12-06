@@ -16,6 +16,19 @@ body {
   background-attachment: fixed;
   text-align: center;
   font-family: "Roboto", sans-serif;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #333;
+  opacity: 0.2;
+  z-index: -1;
 }
 
 input {
@@ -29,24 +42,11 @@ button {
 
 .wrapper {
   width: 80%;
-  height: 100vh;
+  height: 100%;
   margin-left: auto;
   margin-right: auto;
   position: relative;
-  /* background-color: #00caca; */
 }
-
-/* .wrapper::before {
-  content: "";
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #333;
-  opacity: 0.2;
-  z-index: -1;
-} */
 
 /* Layout */
 
@@ -144,6 +144,7 @@ main {
   flex-direction: column;
   align-items: center;
   visibility: none;
+  padding-bottom: 4em;
 }
 
 .pollution-item {
@@ -238,5 +239,16 @@ main {
   .pollution-item {
     width: 100%;
     margin: 0.5em 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  header {
+    padding-top: 0;
+  }
+
+  header h1 {
+    padding-top: 0.5em;
+    margin-top: 0;
   }
 }
